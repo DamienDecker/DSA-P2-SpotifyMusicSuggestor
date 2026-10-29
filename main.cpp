@@ -16,6 +16,9 @@ int main() {
     //Create welcome window
     sf::RenderWindow welcomeWindow(sf::VideoMode({windowWidth, windowHeight}), "Home Screen");
 
+    //Filter window for later
+    sf::RenderWindow filterWindow;
+
     //Simple arial font
     const sf::Font font("resources/arial.ttf");
 
@@ -33,16 +36,24 @@ int main() {
     startText.setCharacterSize(30);
     setText(startText, (windowWidth/2), (windowHeight/2) - 100);
 
-    //Texture (Image) I got from the web
+    //Create button to advance in program
     sf::Texture spotifyTexture;
     if (!spotifyTexture.loadFromFile("resources/Spotify_Primary_Logo_RGB_Black.png")) {
         cout << "Could not load spotify texture" << endl;
         return 1;
     }
 
-    //Creates the button
     Button spotifyButton(spotifyTexture);
     spotifyButton.buttonPosition((windowWidth/2 - 100), (windowHeight/2));
+
+    //Create button here to use for two different screens. Set position later
+    sf::Texture homeTexture;
+    if (!homeTexture.loadFromFile("resources/house-png-202.png")) {
+        cout << "Could not load home texture" << endl;
+        return 1;
+    }
+
+    Button homeButton(homeTexture);
 
     //Welcome window start
     while (welcomeWindow.isOpen()) {
@@ -73,7 +84,20 @@ int main() {
                         welcomeWindow.close();
 
                         //Create the window that will have suer filter in
-                        sf::RenderWindow filterWindow(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
+                        filterWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
+
+                        homeButton.buttonPosition(windowWidth/2 - 200, windowHeight - 125);
+
+                        //Search button info
+                        sf::Texture searchTexture;
+                        if (!searchTexture.loadFromFile("resources/search-icon-png-9965.png")) {
+                            cout << "Could not load search texture" << endl;
+                            return 1;
+                        }
+
+                        Button searchButton(searchTexture);
+                        searchButton.buttonPosition((windowWidth/2 - 50), windowHeight - 220);
+                        searchButton.getSprite().setScale({0.5, 0.5});
 
                         //Filter window start
                         while (filterWindow.isOpen()) {
@@ -85,7 +109,36 @@ int main() {
                                 if (event->is<sf::Event::Closed>()) {
                                     filterWindow.close();
                                 }
+
+                                //User clicks
+                                if (const auto* mousePress = event->getIf<sf::Event::MouseButtonPressed>()) {
+
+                                    //Get location of where user clicks
+                                    sf::Vector2i mousePosition = mousePress->position;
+                                    int x = mousePosition.x;
+                                    int y = mousePosition.y;
+
+                                    //If user left-clicked
+                                    if (mousePress->button == sf::Mouse::Button::Left) {
+
+                                        //If user left-clicked on the button to to back to home screen
+                                        if (homeButton.withinBounds(x, y)) {
+
+                                            //Close filter window
+                                            filterWindow.close();
+
+                                            //Goes back to welcome window
+                                            welcomeWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
+                                        }
+                                    }
+                                }
                             }
+
+                            //Draw filter window features
+                            filterWindow.clear(sf::Color::Green);
+                            filterWindow.draw(homeButton.getSprite());
+                            filterWindow.draw(searchButton.getSprite());
+                            filterWindow.display();
                         }
                     }
                 }
