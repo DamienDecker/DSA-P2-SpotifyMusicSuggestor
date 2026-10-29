@@ -17,7 +17,9 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
         main.cpp
         Button.h
         Button.cpp
-        )
+        Dropdown.cpp
+        Dropdown.h
+)
 
 target_compile_features(DSA_P2_SpotifyMusicSuggestor PRIVATE cxx_std_17)
 target_link_libraries(DSA_P2_SpotifyMusicSuggestor PRIVATE SFML::Graphics)
