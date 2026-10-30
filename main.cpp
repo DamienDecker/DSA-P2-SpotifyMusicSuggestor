@@ -22,14 +22,14 @@ int main() {
     //Simple arial font
     const sf::Font font("resources/arial.ttf");
 
-    //Text
+    //Welcome message text
     sf::Text welcomeText(font);
     welcomeText.setString("WELCOME TO SPOTIFY SONG SUGGESTOR!");
     welcomeText.setStyle(sf::Text::Bold | sf::Text::Underlined);
     welcomeText.setCharacterSize(36);
     setText(welcomeText, (windowWidth/2), (windowHeight/2) - 150);
 
-    //Text
+    //Direction text
     sf::Text startText(font);
     startText.setString("Click The Logo to Begin");
     startText.setStyle(sf::Text::Bold);
@@ -99,6 +99,39 @@ int main() {
                         searchButton.buttonPosition((windowWidth/2 - 50), windowHeight - 220);
                         searchButton.getSprite().setScale({0.5, 0.5});
 
+                        //Drop down button info
+                        sf::Texture dropdownTexture;
+                        if (!dropdownTexture.loadFromFile("resources/dropdown.png")) {
+                            cout << "Could not load search texture" << endl;
+                            return 1;
+                        }
+
+                        Button dropdownButton(dropdownTexture);
+                        float dropdownPositionX = 200;
+                        float dropdownPositionY = 250;
+                        dropdownButton.buttonPosition(dropdownPositionX, dropdownPositionY);
+                        dropdownButton.getSprite().setScale({1.0, 1.0});
+
+                        //Starting conditions for the genre drop box. Hand selected a few genres since there were 114 in the dataset
+                        std::vector<std::string> genres = {"pop", "rock", "country", "alternative", "hip-hop", "jazz", "edm", "electronic", "indie-pop", "dancehall", "r-n-b"};
+                        bool genreOpen = false;
+                        int genreIndex = 0;
+
+                        //The selected genre
+                        sf::Text selectedGenre(font);
+                        selectedGenre.setCharacterSize(30);
+                        setText(selectedGenre, dropdownPositionX + 50, dropdownPositionY);
+
+                        //Set the text for each genre option from drop down
+                        std::vector<sf::Text> genreOptions;
+                        for (int i = 0; i < genres.size(); ++i) {
+                            sf::Text genre(font);
+                            genre.setString(genres[i]);
+                            genre.setCharacterSize(20);
+                            setText(genre, dropdownPositionX + 70, dropdownPositionY + 60 + (35 * i));
+                            genreOptions.push_back(genre);
+                        }
+
                         //Filter window start
                         while (filterWindow.isOpen()) {
 
@@ -115,13 +148,13 @@ int main() {
 
                                     //Get location of where user clicks
                                     sf::Vector2i mousePosition = mousePress->position;
-                                    int x = mousePosition.x;
-                                    int y = mousePosition.y;
+                                    float x = mousePosition.x;
+                                    float y = mousePosition.y;
 
                                     //If user left-clicked
                                     if (mousePress->button == sf::Mouse::Button::Left) {
 
-                                        //If user left-clicked on the button to to back to home screen
+                                        //If user left-clicked on the button to go back to home screen
                                         if (homeButton.withinBounds(x, y)) {
 
                                             //Close filter window
@@ -130,14 +163,40 @@ int main() {
                                             //Goes back to welcome window
                                             welcomeWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
                                         }
+
+                                        //Open/close the dropdown for genres depending on current state
+                                        else if (dropdownButton.withinBounds(x, y)) {
+                                            genreOpen = !genreOpen;
+                                        }
+
+                                        //If the options for genre should be showing
+                                        else if (genreOpen) {
+                                            for (int i = 0; i < genreOptions.size(); i++) {
+                                                if (genreOptions[i].getGlobalBounds().contains({x, y})) {
+                                                    genreIndex = i;
+                                                    genreOpen = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
 
                             //Draw filter window features
                             filterWindow.clear(sf::Color::Green);
+                            selectedGenre.setString(genres[genreIndex]);
+                            filterWindow.draw(selectedGenre);
                             filterWindow.draw(homeButton.getSprite());
                             filterWindow.draw(searchButton.getSprite());
+                            filterWindow.draw(dropdownButton.getSprite());
+
+                            //If the menu options should be showing display the options
+                            if (genreOpen) {
+                                for (const auto& genre : genreOptions) {
+                                    filterWindow.draw(genre);
+                                }
+                            }
                             filterWindow.display();
                         }
                     }
