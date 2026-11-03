@@ -106,21 +106,35 @@ int main() {
                             return 1;
                         }
 
-                        Button dropdownButton(dropdownTexture);
-                        float dropdownPositionX = 200;
-                        float dropdownPositionY = 250;
-                        dropdownButton.buttonPosition(dropdownPositionX, dropdownPositionY);
-                        dropdownButton.getSprite().setScale({1.0, 1.0});
+                        //Genre dropdown
+                        Button genreButton(dropdownTexture);
+                        genreButton.buttonPosition(200, 250);
+                        genreButton.getSprite().setScale({1.0, 1.0});
+
+                        //Feature dropdown
+                        Button featureButton(dropdownTexture);
+                        featureButton.buttonPosition(850, 250);
+                        featureButton.getSprite().setScale({1.0, 1.0});
 
                         //Starting conditions for the genre drop box. Hand selected a few genres since there were 114 in the dataset
                         std::vector<std::string> genres = {"pop", "rock", "country", "alternative", "hip-hop", "jazz", "edm", "electronic", "indie-pop", "dancehall", "r-n-b"};
                         bool genreOpen = false;
                         int genreIndex = 0;
 
+                        //Starting conditions for feature dropdown and vector features user can sort by
+                        std::vector<std::string> features = {"danceability", "energy", "key", "loudness", "speechiness", "acousticness", "liveness", "valence", "tempo", "instrumentalness"};
+                        bool featureOpen = false;
+                        int featureIndex = 0;
+
                         //The selected genre
                         sf::Text selectedGenre(font);
                         selectedGenre.setCharacterSize(30);
-                        setText(selectedGenre, dropdownPositionX + 50, dropdownPositionY);
+                        setText(selectedGenre, 250, 250);
+
+                        //The selected feature
+                        sf::Text selectedFeature(font);
+                        selectedFeature.setCharacterSize(30);
+                        setText(selectedFeature, 900, 250);
 
                         //Set the text for each genre option from drop down
                         std::vector<sf::Text> genreOptions;
@@ -128,8 +142,18 @@ int main() {
                             sf::Text genre(font);
                             genre.setString(genres[i]);
                             genre.setCharacterSize(20);
-                            setText(genre, dropdownPositionX + 70, dropdownPositionY + 60 + (35 * i));
+                            setText(genre, 270, 310 + (35 * i));
                             genreOptions.push_back(genre);
+                        }
+
+                        //Set the text for each feature option from drop down
+                        std::vector<sf::Text> featureOptions;
+                        for (int i = 0; i < features.size(); ++i) {
+                            sf::Text feature(font);
+                            feature.setString(features[i]);
+                            feature.setCharacterSize(20);
+                            setText(feature, 970, 310 + (35 * i));
+                            featureOptions.push_back(feature);
                         }
 
                         //Filter window start
@@ -165,16 +189,30 @@ int main() {
                                         }
 
                                         //Open/close the dropdown for genres depending on current state
-                                        else if (dropdownButton.withinBounds(x, y)) {
+                                        if (genreButton.withinBounds(x, y)) {
                                             genreOpen = !genreOpen;
                                         }
 
                                         //If the options for genre should be showing
-                                        else if (genreOpen) {
+                                        if (genreOpen) {
                                             for (int i = 0; i < genreOptions.size(); i++) {
                                                 if (genreOptions[i].getGlobalBounds().contains({x, y})) {
                                                     genreIndex = i;
                                                     genreOpen = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (featureButton.withinBounds(x, y)) {
+                                            featureOpen = !featureOpen;
+                                        }
+
+                                        if (featureOpen) {
+                                            for (int i = 0; i < featureOptions.size(); i++) {
+                                                if (featureOptions[i].getGlobalBounds().contains({x, y})) {
+                                                    featureIndex = i;
+                                                    featureOpen = false;
                                                     break;
                                                 }
                                             }
@@ -186,15 +224,24 @@ int main() {
                             //Draw filter window features
                             filterWindow.clear(sf::Color::Green);
                             selectedGenre.setString(genres[genreIndex]);
+                            selectedFeature.setString(features[featureIndex]);
                             filterWindow.draw(selectedGenre);
+                            filterWindow.draw(selectedFeature);
                             filterWindow.draw(homeButton.getSprite());
                             filterWindow.draw(searchButton.getSprite());
-                            filterWindow.draw(dropdownButton.getSprite());
+                            filterWindow.draw(genreButton.getSprite());
+                            filterWindow.draw(featureButton.getSprite());
 
                             //If the menu options should be showing display the options
                             if (genreOpen) {
                                 for (const auto& genre : genreOptions) {
                                     filterWindow.draw(genre);
+                                }
+                            }
+
+                            if (featureOpen) {
+                                for (const auto& feature : featureOptions) {
+                                    filterWindow.draw(feature);
                                 }
                             }
                             filterWindow.display();
