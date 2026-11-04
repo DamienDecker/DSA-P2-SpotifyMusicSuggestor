@@ -18,6 +18,8 @@ int main() {
 
     //Filter window for later
     sf::RenderWindow filterWindow;
+    sf::RenderWindow songsWindow;
+
 
     //Simple arial font
     const sf::Font font("resources/arial.ttf");
@@ -156,6 +158,35 @@ int main() {
                             featureOptions.push_back(feature);
                         }
 
+                        //Prompt for user to enter name
+                        sf::Text songsPrompt(font);
+                        songsPrompt.setString("Enter the number of songs you would like to see (Max 20):");
+                        songsPrompt.setStyle(sf::Text::Bold);
+                        songsPrompt.setFillColor(sf::Color::White);
+                        songsPrompt.setCharacterSize(18);
+                        setText(songsPrompt, (windowWidth/2), (windowHeight/2) + 75);
+
+                        //Properties for number of songs user types in
+                        sf::Text number(font);
+                        number.setStyle(sf::Text::Bold);
+                        number.setFillColor(sf::Color::White);
+                        number.setCharacterSize(18);
+                        setText(number, (windowWidth/2), (windowHeight/2) + 100);
+
+                        //Displays cursor to start
+                        string numSongs = "|";
+                        number.setString(numSongs);
+
+                        bool invalidSongs = false;
+
+                        //Message when user does not have valid number of songs entry
+                        sf::Text error(font);
+                        error.setString("Invalid number of songs");
+                        error.setStyle(sf::Text::Bold);
+                        error.setFillColor(sf::Color::Red);
+                        error.setCharacterSize(18);
+                        setText(error, (windowWidth/2), (windowHeight/2) + 150);
+
                         //Filter window start
                         while (filterWindow.isOpen()) {
 
@@ -167,8 +198,27 @@ int main() {
                                     filterWindow.close();
                                 }
 
+                                //The text a user types in
+                                else if (const auto* textEvent = event->getIf<sf::Event::TextEntered>()) {
+
+                                    //If user backspaces when there is at least 1 character entered
+                                    if (textEvent->unicode == 8 && numSongs.length() > 1) {
+                                        numSongs = numSongs.substr(0, numSongs.length() - 1);
+                                        numSongs[numSongs.length() - 1] = '|';
+                                    }
+
+                                    //User enters a numerical character
+                                    else if (textEvent->unicode >= '0' && textEvent->unicode <= '9' && numSongs.size() < 3) {
+                                        char num = static_cast<char>(textEvent->unicode);
+                                        numSongs[numSongs.length() - 1] = num;
+                                        numSongs += '|';
+                                    }
+                                    //Sets correct value of new string and displays it to user as they type it
+                                    number.setString(numSongs);
+                                }
+
                                 //User clicks
-                                if (const auto* mousePress = event->getIf<sf::Event::MouseButtonPressed>()) {
+                                else if (const auto* mousePress = event->getIf<sf::Event::MouseButtonPressed>()) {
 
                                     //Get location of where user clicks
                                     sf::Vector2i mousePosition = mousePress->position;
@@ -186,6 +236,17 @@ int main() {
 
                                             //Goes back to welcome window
                                             welcomeWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
+                                        }
+
+                                        if (searchButton.withinBounds(x, y)) {
+                                            int songs = stoi(numSongs.substr(0, numSongs.length() - 1));
+                                            if (songs > 20 || numSongs.length() == 1) {
+                                                invalidSongs = true;
+                                            }
+                                            else {
+                                                invalidSongs = false;
+                                                songsWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Suggestion Screen");
+                                            }
                                         }
 
                                         //Open/close the dropdown for genres depending on current state
@@ -231,6 +292,14 @@ int main() {
                             filterWindow.draw(searchButton.getSprite());
                             filterWindow.draw(genreButton.getSprite());
                             filterWindow.draw(featureButton.getSprite());
+                            filterWindow.draw(songsPrompt);
+                            filterWindow.draw(number);
+
+                            //If user should be seeing error message
+                            if (invalidSongs) {
+                                filterWindow.draw(error);
+                            }
+
 
                             //If the menu options should be showing display the options
                             if (genreOpen) {
