@@ -15,10 +15,14 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(DSA_P2_SpotifyMusicSuggestor
         main.cpp
-        Button.h
         Button.cpp
+        Button.h
         mergesort.cpp
         mergesort.h
+        Song.cpp
+        Song.h
+        DataLoader.cpp
+        DataLoader.h
 )
 
 add_executable(test_mergesort
