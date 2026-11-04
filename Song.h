@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 
-// One row of the Kaggle Spotify Tracks dataset.
-// Every sortable feature is stored as a double so one sort function can handle all of them.
 struct Song {
     std::string trackId;
     std::string artists;
@@ -27,11 +25,6 @@ struct Song {
     int timeSignature = 0;
 };
 
-// A "pointer to a member" of Song, like &Song::energy.
-// Given a Song s and a SongField f, s.*f reads that field.
-// This lets the sorts look up the feature name once instead of comparing strings millions of times.
 using SongField = double Song::*;
 
-// Turns a feature name from the dropdown ("energy", "tempo", ...) into the matching field.
-// Throws std::invalid_argument for an unknown name.
 SongField featureField(const std::string& feature);
