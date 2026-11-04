@@ -1,101 +1,91 @@
 #include "DataLoader.h"
 #include <fstream>
+#include <string>
+#include <vector>
 #include <stdexcept>
 
-namespace {
+using namespace std;
 
-// Splits one CSV line into fields. A field wrapped in double quotes may contain commas,
-// and "" inside quotes stands for a single " character.
-std::vector<std::string> splitCsvLine(const std::string& line) {
-    std::vector<std::string> fields;
-    std::string current;
+// splits a csv line into columns
+vector<string> splitLine(const string& line) {
+    vector<string> columns;
+    string word = "";
     bool inQuotes = false;
 
-    for (size_t i = 0; i < line.size(); i++) {
+    for (int i = 0; i < line.size(); i++) {
         char c = line[i];
-        if (inQuotes) {
-            if (c == '"' && i + 1 < line.size() && line[i + 1] == '"') {
-                current += '"';   // escaped quote
-                i++;
-            } else if (c == '"') {
-                inQuotes = false; // closing quote
-            } else {
-                current += c;
-            }
-        } else if (c == '"') {
-            inQuotes = true;
-        } else if (c == ',') {
-            fields.push_back(current);
-            current.clear();
-        } else if (c != '\r') {
-            current += c;
+
+        if (c == '"') {
+            inQuotes = !inQuotes;
+        }
+        else if (c == ',' && !inQuotes) {
+            columns.push_back(word);
+            word = "";
+        }
+        else if (c != '\r') {
+            word += c;
         }
     }
-    fields.push_back(current);
-    return fields;
+    columns.push_back(word);
+    return columns;
 }
 
-}
-
-std::vector<Song> loadSongs(const std::string& path) {
-    std::ifstream file(path);
+// reads all songs from the csv
+vector<Song> loadSongs(const string& path) {
+    ifstream file(path);
     if (!file.is_open()) {
-        throw std::runtime_error("Could not open " + path);
+        throw runtime_error("Could not open " + path);
     }
 
-    // Column order in dataset.csv (column 0 is an unnamed row index):
-    // ,track_id,artists,album_name,track_name,popularity,duration_ms,explicit,danceability,
-    // energy,key,loudness,mode,speechiness,acousticness,instrumentalness,liveness,valence,
-    // tempo,time_signature,track_genre
-    const size_t expectedColumns = 21;
+    vector<Song> songs;
+    string line;
+    getline(file, line);
 
-    std::vector<Song> songs;
-    songs.reserve(115000);
+    while (getline(file, line)) {
+        vector<string> col = splitLine(line);
 
-    std::string line;
-    std::getline(file, line); // skip header row
-
-    while (std::getline(file, line)) {
-        std::vector<std::string> f = splitCsvLine(line);
-        if (f.size() != expectedColumns) {
-            continue; // malformed row
+        if (col.size() != 21) {
+            continue;
         }
 
         try {
-            Song s;
-            s.trackId = f[1];
-            s.artists = f[2];
-            s.albumName = f[3];
-            s.trackName = f[4];
-            s.popularity = std::stod(f[5]);
-            s.durationMs = std::stod(f[6]);
-            s.isExplicit = (f[7] == "True" || f[7] == "true");
-            s.danceability = std::stod(f[8]);
-            s.energy = std::stod(f[9]);
-            s.key = std::stod(f[10]);
-            s.loudness = std::stod(f[11]);
-            s.mode = std::stod(f[12]);
-            s.speechiness = std::stod(f[13]);
-            s.acousticness = std::stod(f[14]);
-            s.instrumentalness = std::stod(f[15]);
-            s.liveness = std::stod(f[16]);
-            s.valence = std::stod(f[17]);
-            s.tempo = std::stod(f[18]);
-            s.timeSignature = std::stoi(f[19]);
-            s.genre = f[20];
-            songs.push_back(s);
-        } catch (const std::exception&) {
-            continue; // a number column was blank or not a number
+            Song song;
+            song.trackId = col[1];
+            song.artists = col[2];
+            song.albumName = col[3];
+            song.trackName = col[4];
+            song.popularity = stod(col[5]);
+            song.durationMs = stod(col[6]);
+            song.isExplicit = (col[7] == "True");
+            song.danceability = stod(col[8]);
+            song.energy = stod(col[9]);
+            song.key = stod(col[10]);
+            song.loudness = stod(col[11]);
+            song.mode = stod(col[12]);
+            song.speechiness = stod(col[13]);
+            song.acousticness = stod(col[14]);
+            song.instrumentalness = stod(col[15]);
+            song.liveness = stod(col[16]);
+            song.valence = stod(col[17]);
+            song.tempo = stod(col[18]);
+            song.timeSignature = stoi(col[19]);
+            song.genre = col[20];
+            songs.push_back(song);
+        }
+        catch (...) {
+            continue;
         }
     }
+
     return songs;
 }
 
-std::vector<Song> filterByGenre(const std::vector<Song>& songs, const std::string& genre) {
-    std::vector<Song> result;
-    for (const Song& s : songs) {
-        if (s.genre == genre) {
-            result.push_back(s);
+// keeps songs from the chosen genre
+vector<Song> filterByGenre(const vector<Song>& songs, const string& genre) {
+    vector<Song> result;
+    for (int i = 0; i < songs.size(); i++) {
+        if (songs[i].genre == genre) {
+            result.push_back(songs[i]);
         }
     }
     return result;
