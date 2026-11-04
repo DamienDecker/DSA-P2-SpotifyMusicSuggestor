@@ -17,6 +17,8 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
         main.cpp
         Button.h
         Button.cpp
+        mergesort.cpp
+        mergesort.h
 )
 
 target_compile_features(DSA_P2_SpotifyMusicSuggestor PRIVATE cxx_std_17)
