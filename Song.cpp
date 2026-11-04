@@ -1,27 +1,52 @@
 #include "Song.h"
+#include <string>
 #include <stdexcept>
-#include <unordered_map>
 
-SongField featureField(const std::string& feature) {
-    static const std::unordered_map<std::string, SongField> fields = {
-        {"popularity", &Song::popularity},
-        {"duration_ms", &Song::durationMs},
-        {"danceability", &Song::danceability},
-        {"energy", &Song::energy},
-        {"key", &Song::key},
-        {"loudness", &Song::loudness},
-        {"mode", &Song::mode},
-        {"speechiness", &Song::speechiness},
-        {"acousticness", &Song::acousticness},
-        {"instrumentalness", &Song::instrumentalness},
-        {"liveness", &Song::liveness},
-        {"valence", &Song::valence},
-        {"tempo", &Song::tempo},
-    };
+using namespace std;
 
-    auto it = fields.find(feature);
-    if (it == fields.end()) {
-        throw std::invalid_argument("Unknown feature: " + feature);
+// returns which Song field to sort by based on the feature name
+SongField featureField(const string& feature) {
+    if (feature == "popularity") {
+        return &Song::popularity;
     }
-    return it->second;
+    else if (feature == "duration_ms") {
+        return &Song::durationMs;
+    }
+    else if (feature == "danceability") {
+        return &Song::danceability;
+    }
+    else if (feature == "energy") {
+        return &Song::energy;
+    }
+    else if (feature == "key") {
+        return &Song::key;
+    }
+    else if (feature == "loudness") {
+        return &Song::loudness;
+    }
+    else if (feature == "mode") {
+        return &Song::mode;
+    }
+    else if (feature == "speechiness") {
+        return &Song::speechiness;
+    }
+    else if (feature == "acousticness") {
+        return &Song::acousticness;
+    }
+    else if (feature == "instrumentalness") {
+        return &Song::instrumentalness;
+    }
+    else if (feature == "liveness") {
+        return &Song::liveness;
+    }
+    else if (feature == "valence") {
+        return &Song::valence;
+    }
+    else if (feature == "tempo") {
+        return &Song::tempo;
+    }
+    // feature name not found
+    else {
+        throw invalid_argument("Unknown feature: " + feature);
+    }
 }
