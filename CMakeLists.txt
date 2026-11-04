@@ -15,14 +15,24 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(DSA_P2_SpotifyMusicSuggestor
         main.cpp
-        Button.h
         Button.cpp
-        Song.h
-        Song.cpp
-        DataLoader.h
-        DataLoader.cpp
+        Button.h
+        mergesort.cpp
+        mergesort.h
         QuickSort.h
         QuickSort.cpp
+        Song.cpp
+        Song.h
+        DataLoader.cpp
+        DataLoader.h
+)
+
+# Standalone sort tests (no SFML). Run: ./test_mergesort resources/dataset.csv
+add_executable(test_mergesort
+        test_mergesort.cpp
+        mergesort.cpp
+        Song.cpp
+        DataLoader.cpp
 )
 
 target_compile_features(DSA_P2_SpotifyMusicSuggestor PRIVATE cxx_std_17)
