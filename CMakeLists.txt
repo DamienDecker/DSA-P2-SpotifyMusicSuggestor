@@ -21,5 +21,15 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
         mergesort.h
 )
 
+add_executable(test_mergesort
+        test_mergesort.cpp
+        mergesort.cpp
+        mergesort.h
+        Song.cpp
+        Song.h
+        DataLoader.cpp
+        DataLoader.h
+)
+
 target_compile_features(DSA_P2_SpotifyMusicSuggestor PRIVATE cxx_std_17)
 target_link_libraries(DSA_P2_SpotifyMusicSuggestor PRIVATE SFML::Graphics)
