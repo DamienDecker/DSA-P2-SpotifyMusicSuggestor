@@ -20,6 +20,8 @@ int main() {
     sf::RenderWindow filterWindow;
     sf::RenderWindow songsWindow;
 
+    //Making green color that replicates the green for spotify
+    sf::Color darkGreen(30, 190, 80);
 
     //Simple arial font
     const sf::Font font("resources/arial.ttf");
@@ -48,7 +50,7 @@ int main() {
     Button spotifyButton(spotifyTexture);
     spotifyButton.buttonPosition((windowWidth/2 - 100), (windowHeight/2));
 
-    //Create button here to use for two different screens. Set position later
+    //Create home button here to use for two different screens. Set position later
     sf::Texture homeTexture;
     if (!homeTexture.loadFromFile("resources/house-png-202.png")) {
         cout << "Could not load home texture" << endl;
@@ -177,6 +179,7 @@ int main() {
                         string numSongs = "|";
                         number.setString(numSongs);
 
+                        //Initial boolean condition
                         bool invalidSongs = false;
 
                         //Message when user does not have valid number of songs entry
@@ -213,6 +216,7 @@ int main() {
                                         numSongs[numSongs.length() - 1] = num;
                                         numSongs += '|';
                                     }
+
                                     //Sets correct value of new string and displays it to user as they type it
                                     number.setString(numSongs);
                                 }
@@ -239,13 +243,103 @@ int main() {
                                         }
 
                                         if (searchButton.withinBounds(x, y)) {
-                                            int songs = stoi(numSongs.substr(0, numSongs.length() - 1));
-                                            if (songs > 20 || numSongs.length() == 1) {
+
+                                            //Condition that user tries to search when number of songs input is empty
+                                            bool noInput = false;
+                                            if (numSongs.length() == 1) {
+                                                invalidSongs = true;
+                                                noInput = true;
+                                            }
+
+                                            //Turns the string on number of songs into an int if there is an input
+                                            int songs;
+                                            if (!noInput) {
+                                                songs = stoi(numSongs.substr(0, numSongs.length() - 1));
+                                            }
+
+                                            //Validation for number of songs
+                                            if (songs > 20 || noInput) {
                                                 invalidSongs = true;
                                             }
+
+                                            //Program continue to result screen
                                             else {
                                                 invalidSongs = false;
-                                                songsWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Suggestion Screen");
+                                                noInput = false;
+                                                filterWindow.close();
+
+                                                //Height of screen dependent on number of songs user searches
+                                                songsWindow.create(sf::VideoMode({windowWidth, static_cast<unsigned>(songs * 40) + 100}), "Suggestion Screen");
+
+                                                //Used to draw the lines to separate the song information we display
+                                                sf::VertexArray line(sf::PrimitiveType::Lines, songs * 2);
+
+                                                //Home button at bottom
+                                                homeButton.buttonPosition(windowWidth/2 - 50, songs * 40 + 10);
+                                                homeButton.getSprite().setScale({0.2, 0.2});
+
+                                                //Need to insert here the sorted songs
+                                                //selectedGenre and selectedFeature
+
+                                                //Result window open
+                                                while (songsWindow.isOpen()) {
+
+                                                    //Event loop
+                                                    while (const std::optional event = songsWindow.pollEvent()) {
+
+                                                        //User clicks 'X' in top right
+                                                        if (event->is<sf::Event::Closed>()) {
+                                                            songsWindow.close();
+                                                        }
+
+                                                        //User clicks
+                                                        else if (const auto* mousePress = event->getIf<sf::Event::MouseButtonPressed>()) {
+                                                            //Get location of where user clicks
+                                                            sf::Vector2i mousePosition = mousePress->position;
+                                                            float x = mousePosition.x;
+                                                            float y = mousePosition.y;
+
+                                                            //If user left-clicked
+                                                            if (mousePress->button == sf::Mouse::Button::Left) {
+                                                                //If user left-clicked on the button to go back to home screen
+                                                                if (homeButton.withinBounds(x, y)) {
+
+                                                                    //Close result window
+                                                                    songsWindow.close();
+
+                                                                    //Goes back to welcome window
+                                                                    welcomeWindow.create(sf::VideoMode({windowWidth, windowHeight}), "Filter Screen");
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    //Draw features of the result window
+                                                    songsWindow.clear(darkGreen);
+
+                                                    //Draws each line along with the text of the song info for each line
+                                                    int vertexIndex = 0;
+                                                    for (int i = 1; i <= songs; i+= 1) {
+                                                        line[vertexIndex].position = sf::Vector2f(0.f, i * 40);
+                                                        vertexIndex += 1;
+
+                                                        line[vertexIndex].position = sf::Vector2f(windowWidth, i * 40);
+                                                        vertexIndex += 1;
+
+                                                        //Song info. Need to change "Test" to the info for each song
+                                                        sf::Text songInfo(font);
+                                                        songInfo.setString("Test");
+                                                        songInfo.setStyle(sf::Text::Bold);
+                                                        songInfo.setFillColor(sf::Color::White);
+                                                        songInfo.setCharacterSize(20);
+                                                        setText(songInfo, (25), (i * 40 - 20));
+                                                        songsWindow.draw(songInfo);
+                                                    }
+
+                                                    songsWindow.draw(line);
+                                                    songsWindow.draw(homeButton.getSprite());
+                                                    songsWindow.display();
+                                                }
                                             }
                                         }
 
@@ -265,10 +359,12 @@ int main() {
                                             }
                                         }
 
+                                        //Open/close the dropdown for feature depending on current state
                                         if (featureButton.withinBounds(x, y)) {
                                             featureOpen = !featureOpen;
                                         }
 
+                                        //If the options for feature should be showing
                                         if (featureOpen) {
                                             for (int i = 0; i < featureOptions.size(); i++) {
                                                 if (featureOptions[i].getGlobalBounds().contains({x, y})) {
@@ -283,7 +379,7 @@ int main() {
                             }
 
                             //Draw filter window features
-                            filterWindow.clear(sf::Color::Green);
+                            filterWindow.clear(darkGreen);
                             selectedGenre.setString(genres[genreIndex]);
                             selectedFeature.setString(features[featureIndex]);
                             filterWindow.draw(selectedGenre);
@@ -300,14 +396,14 @@ int main() {
                                 filterWindow.draw(error);
                             }
 
-
-                            //If the menu options should be showing display the options
+                            //If the menu options should be showing for genres display the options
                             if (genreOpen) {
                                 for (const auto& genre : genreOptions) {
                                     filterWindow.draw(genre);
                                 }
                             }
 
+                            //If the menu options should be showing for features display the options
                             if (featureOpen) {
                                 for (const auto& feature : featureOptions) {
                                     filterWindow.draw(feature);
@@ -321,7 +417,7 @@ int main() {
         }
 
         //Display welcome window features
-        welcomeWindow.clear(sf::Color::Green);
+        welcomeWindow.clear(darkGreen);
         welcomeWindow.draw(spotifyButton.getSprite());
         welcomeWindow.draw(welcomeText);
         welcomeWindow.draw(startText);
