@@ -25,4 +25,15 @@ SortResult runSorts(vector<Song> &allSongs, string genre, string feature) {
     quickSort(quickSongs, feature, true);
     auto quickEnd = chrono::high_resolution_clock::now();
     result.quickTime = chrono::duration<double, milli>(quickEnd - quickStart).count();
+
+    //Save the sorted songs so the display can use them
+    result.sortedSongs = mergeSongs;
+
+    //Print the times to the console
+    cout << "Genre: " << genre << ", Feature: " << feature << endl;
+    cout << "Number of songs sorted: " << genreSongs.size() << endl;
+    cout << "Merge sort time: " << result.mergeTime << " ms" << endl;
+    cout << "Quick sort time: " << result.quickTime << " ms" << endl;
+
+    return result;
 }
