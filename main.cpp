@@ -29,7 +29,7 @@ int main() {
     const sf::Font font("resources/arial.ttf");
 
     //Load all the songs from the dataset one time when the program starts
-    vector<Song> allSongs = loadSongs("resources/spotify_dataset.csv");
+    vector<Song> allSongs = loadSongs("resources/dataset.csv");
 
     //Welcome message text
     sf::Text welcomeText(font);
@@ -274,21 +274,33 @@ int main() {
                                                 filterWindow.close();
 
                                                 //Height of screen dependent on number of songs user searches
-                                                songsWindow.create(sf::VideoMode({windowWidth, static_cast<unsigned>(songs * 40) + 100}), "Suggestion Screen");
+                                                songsWindow.create(sf::VideoMode({windowWidth + 300, static_cast<unsigned>(songs * 40) + 100}), "Suggestion Screen");
 
                                                 //Used to draw the lines to separate the song information we display
                                                 sf::VertexArray line(sf::PrimitiveType::Lines, songs * 2);
 
                                                 //Home button at bottom
-                                                homeButton.buttonPosition(windowWidth/2 - 50, songs * 40 + 10);
+                                                homeButton.buttonPosition((windowWidth + 200) / 2 , songs * 40 + 10);
                                                 homeButton.getSprite().setScale({0.2, 0.2});
 
                                                 //Sort the songs and time both sorts
                                                 SortResult result = runSorts(allSongs, genres[genreIndex], features[featureIndex]);
-                                                //Sorted Song Display needs to be inserted
-                                                // result.sortedSong - sorted song vector
-                                                // result.mergeTime & result.quickTime - respective times in ms
 
+                                                //Shows the time for the merge sort
+                                                sf::Text mergeText(font);
+                                                mergeText.setString("Time for merge sort (milliseconds) = " + to_string(result.mergeTime));
+                                                mergeText.setStyle(sf::Text::Bold);
+                                                mergeText.setFillColor(sf::Color::White);
+                                                mergeText.setCharacterSize(20);
+                                                setText(mergeText, (windowWidth + 300) / 4, songs * 40 + 50);
+
+                                                //Shows the time for the quick sort
+                                                sf::Text quickText(font);
+                                                quickText.setString("Time for quick sort (milliseconds) = " + to_string(result.quickTime));
+                                                quickText.setStyle(sf::Text::Bold);
+                                                quickText.setFillColor(sf::Color::White);
+                                                quickText.setCharacterSize(20);
+                                                setText(quickText, ((windowWidth + 300) * 3) / 4, songs * 40 + 50);
 
                                                 //Result window open
                                                 while (songsWindow.isOpen()) {
@@ -310,6 +322,7 @@ int main() {
 
                                                             //If user left-clicked
                                                             if (mousePress->button == sf::Mouse::Button::Left) {
+
                                                                 //If user left-clicked on the button to go back to home screen
                                                                 if (homeButton.withinBounds(x, y)) {
 
@@ -332,21 +345,22 @@ int main() {
                                                         line[vertexIndex].position = sf::Vector2f(0.f, i * 40);
                                                         vertexIndex += 1;
 
-                                                        line[vertexIndex].position = sf::Vector2f(windowWidth, i * 40);
+                                                        line[vertexIndex].position = sf::Vector2f(windowWidth + 300, i * 40);
                                                         vertexIndex += 1;
 
-                                                        //Song info. Need to change "Test" to the info for each song
                                                         sf::Text songInfo(font);
-                                                        songInfo.setString("Test");
+                                                        songInfo.setString(result.sortedSongs[i].trackName + " ON " + result.sortedSongs[i].albumName + " BY " + result.sortedSongs[i].artists);
                                                         songInfo.setStyle(sf::Text::Bold);
                                                         songInfo.setFillColor(sf::Color::White);
-                                                        songInfo.setCharacterSize(20);
-                                                        setText(songInfo, (25), (i * 40 - 20));
+                                                        songInfo.setCharacterSize(15);
+                                                        setText(songInfo, (windowWidth + 200) / 2, (i * 40 - 20));
                                                         songsWindow.draw(songInfo);
                                                     }
 
                                                     songsWindow.draw(line);
                                                     songsWindow.draw(homeButton.getSprite());
+                                                    songsWindow.draw(mergeText);
+                                                    songsWindow.draw(quickText);
                                                     songsWindow.display();
                                                 }
                                             }

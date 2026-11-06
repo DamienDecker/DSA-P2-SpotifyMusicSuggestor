@@ -3,7 +3,7 @@
 #include "Mergesort.h"
 #include "quicksort.h"
 
-SortResult runSorts(const vector<Song> &allSongs, const string genre, const string feature) {
+SortResult runSorts(vector<Song> &allSongs, string genre, string feature) {
     SortResult result;
 
     //Only keep the songs from the genre the user picked
