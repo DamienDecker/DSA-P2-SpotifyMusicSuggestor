@@ -18,6 +18,7 @@ This project implements and compares Merge Sort and Quick Sort using the Spotify
 - `main.cpp` / `Button.cpp/.h` – SFML graphical user interface components.
 - `mergesort.cpp/.h` – Custom Merge Sort implementation.
 - `QuickSort.cpp/.h` – Custom Quick Sort implementation.
+- `SortTimer.cpp/.h` - Merge Sort and Quick Sort Timer
 - `DataLoader.cpp/.h` – CSV parser for loading dataset entries.
 - `test_mergesort.cpp` – Standalone test suite and performance benchmark runner.
 - `resources/dataset.csv` – Spotify song dataset (~114k rows).
