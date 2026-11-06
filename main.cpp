@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Button.h"
+#include "DataLoader.h"
+#include "SortTimer.h"
 
 using namespace std;
 
@@ -25,6 +27,9 @@ int main() {
 
     //Simple arial font
     const sf::Font font("resources/arial.ttf");
+
+    //Load all the songs from the dataset one time when the program starts
+    vector<Song> allSongs = loadSongs("resources/spotify_dataset.csv");
 
     //Welcome message text
     sf::Text welcomeText(font);
@@ -278,8 +283,12 @@ int main() {
                                                 homeButton.buttonPosition(windowWidth/2 - 50, songs * 40 + 10);
                                                 homeButton.getSprite().setScale({0.2, 0.2});
 
-                                                //Need to insert here the sorted songs
-                                                //selectedGenre and selectedFeature
+                                                //Sort the songs and time both sorts
+                                                SortResult result = runSorts(allSongs, genres[genreIndex], features[featureIndex]);
+                                                //Sorted Song Display needs to be inserted
+                                                // result.sortedSong - sorted song vector
+                                                // result.mergeTime & result.quickTime - respective times in ms
+
 
                                                 //Result window open
                                                 while (songsWindow.isOpen()) {

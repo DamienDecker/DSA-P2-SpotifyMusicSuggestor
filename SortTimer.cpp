@@ -1,10 +1,9 @@
-#include <iostream>
 #include <chrono>
 #include "SortTimer.h"
 #include "Mergesort.h"
 #include "quicksort.h"
 
-SortResult runSorts(vector<Song> &allSongs, string genre, string feature) {
+SortResult runSorts(const vector<Song> &allSongs, const string genre, const string feature) {
     SortResult result;
 
     //Only keep the songs from the genre the user picked
@@ -28,12 +27,6 @@ SortResult runSorts(vector<Song> &allSongs, string genre, string feature) {
 
     //Save the sorted songs so the display can use them
     result.sortedSongs = mergeSongs;
-
-    //Print the times to the console
-    cout << "Genre: " << genre << ", Feature: " << feature << endl;
-    cout << "Number of songs sorted: " << genreSongs.size() << endl;
-    cout << "Merge sort time: " << result.mergeTime << " ms" << endl;
-    cout << "Quick sort time: " << result.quickTime << " ms" << endl;
 
     return result;
 }
