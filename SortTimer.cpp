@@ -1,9 +1,8 @@
 #include <iostream>
 #include <chrono>
 #include "SortTimer.h"
-#include "mergesort.h"
+#include "Mergesort.h"
 #include "quicksort.h"
-#include "sort_timers.h"
 
 SortResult runSorts(vector<Song> &allSongs, string genre, string feature) {
     SortResult result;
