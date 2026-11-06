@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "DataLoader.h"
-#include "mergesort.h"
+#include "Mergesort.h"
 
 using namespace std;
 

@@ -25,6 +25,8 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
         Song.h
         DataLoader.cpp
         DataLoader.h
+        SortTimer.h
+        SortTimer.cpp
 )
 
 # Standalone sort tests (no SFML). Run: ./test_mergesort resources/dataset.csv
