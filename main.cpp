@@ -263,7 +263,7 @@ int main() {
                                             }
 
                                             //Validation for number of songs
-                                            if (songs > 20 || noInput) {
+                                            if (noInput || songs < 1 || songs > 20) {
                                                 invalidSongs = true;
                                             }
 
