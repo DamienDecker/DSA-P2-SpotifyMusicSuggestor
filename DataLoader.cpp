@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <unordered_set>
 
 using namespace std;
 
@@ -80,12 +81,18 @@ vector<Song> loadSongs(const string& path) {
     return songs;
 }
 
-// keeps songs from the chosen genre
+// keeps songs from the chosen genre and skips repeats of the same song
 vector<Song> filterByGenre(const vector<Song>& songs, const string& genre) {
     vector<Song> result;
+    unordered_set<string> seen;
+
     for (int i = 0; i < songs.size(); i++) {
         if (songs[i].genre == genre) {
-            result.push_back(songs[i]);
+            string songKey = songs[i].trackName + "|" + songs[i].artists;
+            if (seen.count(songKey) == 0) {
+                seen.insert(songKey);
+                result.push_back(songs[i]);
+            }
         }
     }
     return result;
