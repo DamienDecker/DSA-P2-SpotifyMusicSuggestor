@@ -349,7 +349,7 @@ int main() {
                                                         vertexIndex += 1;
 
                                                         sf::Text songInfo(font);
-                                                        songInfo.setString(result.sortedSongs[i].trackName + " ON " + result.sortedSongs[i].albumName + " BY " + result.sortedSongs[i].artists);
+                                                        songInfo.setString(result.sortedSongs[i-1].trackName + " ON " + result.sortedSongs[i-1].albumName + " BY " + result.sortedSongs[i-1].artists);
                                                         songInfo.setStyle(sf::Text::Bold);
                                                         songInfo.setFillColor(sf::Color::White);
                                                         songInfo.setCharacterSize(15);
