@@ -17,8 +17,8 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
         main.cpp
         Button.cpp
         Button.h
-        mergesort.cpp
-        mergesort.h
+        Mergesort.cpp
+        Mergesort.h
         QuickSort.h
         QuickSort.cpp
         Song.cpp
@@ -32,7 +32,7 @@ add_executable(DSA_P2_SpotifyMusicSuggestor
 # Standalone sort tests (no SFML). Run: ./test_mergesort resources/dataset.csv
 add_executable(test_mergesort
         test_mergesort.cpp
-        mergesort.cpp
+        Mergesort.cpp
         Song.cpp
         DataLoader.cpp
 )
